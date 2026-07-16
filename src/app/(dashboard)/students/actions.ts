@@ -81,3 +81,40 @@ export async function deleteStudent(formData: FormData) {
   await prisma.student.delete({ where: { id: studentId } });
   revalidatePath("/students");
 }
+
+export type ImportRow = {
+  firstName: string;
+  lastName: string;
+  rollNo: string;
+  className: string;
+};
+
+export async function importStudents(rows: ImportRow[]): Promise<{ imported: number }> {
+  const validRows = rows.filter((row) => row.firstName && row.lastName);
+
+  let imported = 0;
+  for (const row of validRows) {
+    await prisma.student.upsert({
+      where: {
+        firstName_lastName_className: {
+          firstName: row.firstName,
+          lastName: row.lastName,
+          className: row.className || null,
+        },
+      },
+      create: {
+        firstName: row.firstName,
+        lastName: row.lastName,
+        rollNo: row.rollNo || null,
+        className: row.className || null,
+      },
+      update: {
+        rollNo: row.rollNo || undefined,
+      },
+    });
+    imported += 1;
+  }
+
+  revalidatePath("/students");
+  return { imported };
+}
