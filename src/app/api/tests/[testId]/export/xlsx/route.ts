@@ -21,7 +21,7 @@ export async function GET(
   const buffer = await buildTestScoreSheetXlsx(test);
   const filename = `${test.title.replace(/[^a-z0-9_-]/gi, "_")}.xlsx`;
 
-  return new NextResponse(buffer, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "Content-Disposition": `attachment; filename="${filename}"`,

@@ -94,24 +94,26 @@ export async function importStudents(rows: ImportRow[]): Promise<{ imported: num
 
   let imported = 0;
   for (const row of validRows) {
-    await prisma.student.upsert({
-      where: {
-        firstName_lastName_className: {
+    const className = row.className || null;
+    const existing = await prisma.student.findFirst({
+      where: { firstName: row.firstName, lastName: row.lastName, className },
+    });
+
+    if (existing) {
+      await prisma.student.update({
+        where: { id: existing.id },
+        data: { rollNo: row.rollNo || undefined },
+      });
+    } else {
+      await prisma.student.create({
+        data: {
           firstName: row.firstName,
           lastName: row.lastName,
-          className: row.className || null,
+          rollNo: row.rollNo || null,
+          className,
         },
-      },
-      create: {
-        firstName: row.firstName,
-        lastName: row.lastName,
-        rollNo: row.rollNo || null,
-        className: row.className || null,
-      },
-      update: {
-        rollNo: row.rollNo || undefined,
-      },
-    });
+      });
+    }
     imported += 1;
   }
 

@@ -23,7 +23,7 @@ export async function GET(
   const buffer = await buildResultsBundleZip(test, test.scores);
   const filename = `${test.title.replace(/[^a-z0-9_-]/gi, "_")}_results.zip`;
 
-  return new NextResponse(buffer, {
+  return new NextResponse(new Uint8Array(buffer), {
     headers: {
       "Content-Type": "application/zip",
       "Content-Disposition": `attachment; filename="${filename}"`,
