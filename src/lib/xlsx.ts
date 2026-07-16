@@ -8,11 +8,15 @@ export type ImportedStudentRow = {
   className: string;
 };
 
-const HEADER_ALIASES: Record<string, keyof ImportedStudentRow> = {
+const HEADER_ALIASES: Record<string, keyof ImportedStudentRow | "fullName"> = {
   firstname: "firstName",
   "first name": "firstName",
   lastname: "lastName",
   "last name": "lastName",
+  name: "fullName",
+  "full name": "fullName",
+  "student name": "fullName",
+  student: "fullName",
   rollno: "rollNo",
   "roll no": "rollNo",
   "roll no.": "rollNo",
@@ -20,6 +24,7 @@ const HEADER_ALIASES: Record<string, keyof ImportedStudentRow> = {
   class: "className",
   classname: "className",
   "class name": "className",
+  course: "className",
 };
 
 export async function parseStudentRosterXlsx(
@@ -31,7 +36,7 @@ export async function parseStudentRosterXlsx(
   if (!sheet) return [];
 
   const headerRow = sheet.getRow(1);
-  const columnMap = new Map<number, keyof ImportedStudentRow>();
+  const columnMap = new Map<number, keyof ImportedStudentRow | "fullName">();
   headerRow.eachCell((cell, colNumber) => {
     const key = String(cell.value ?? "")
       .trim()
@@ -50,10 +55,23 @@ export async function parseStudentRosterXlsx(
       rollNo: "",
       className: "",
     };
+    let fullName = "";
     row.eachCell((cell, colNumber) => {
       const field = columnMap.get(colNumber);
-      if (field) record[field] = String(cell.value ?? "").trim();
+      if (!field) return;
+      const value = String(cell.value ?? "").trim();
+      if (field === "fullName") {
+        fullName = value;
+      } else {
+        record[field] = value;
+      }
     });
+
+    if (fullName && !record.firstName && !record.lastName) {
+      const parts = fullName.split(/\s+/).filter(Boolean);
+      record.firstName = parts[0] ?? "";
+      record.lastName = parts.length > 1 ? parts.slice(1).join(" ") : (parts[0] ?? "");
+    }
 
     if (record.firstName && record.lastName) rows.push(record);
   });

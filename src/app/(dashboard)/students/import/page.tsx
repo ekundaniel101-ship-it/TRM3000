@@ -74,6 +74,14 @@ export default function ImportStudentsPage() {
 
       {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
 
+      {status === "previewed" && rows.length === 0 && (
+        <p className="mt-4 text-sm text-red-600">
+          No student rows found in that file. Make sure the first row has headers like
+          &quot;First Name&quot;, &quot;Last Name&quot; (or a single &quot;Name&quot; column),
+          &quot;Roll No.&quot;, and &quot;Class&quot; or &quot;Course&quot;.
+        </p>
+      )}
+
       {rows.length > 0 && (
         <div className="mt-6">
           <p className="text-sm text-gray-600">
