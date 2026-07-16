@@ -10,6 +10,7 @@ datasource db {
 enum TestType {
   WEEKLY
   AFTER_CLASS
+  MOCK
 }
 
 model User {
@@ -40,6 +41,8 @@ model Test {
   title       String
   date        DateTime
   maxScore    Float    @default(100)
+  maxObjective Float?
+  maxTheory    Float?
   className   String?
   createdById String?
   createdAt   DateTime @default(now())
@@ -55,6 +58,8 @@ model Score {
   studentId String
   student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
   points    Float
+  objectivePoints Float?
+  theoryPoints    Float?
   remarks   String?
 
   @@unique([testId, studentId])

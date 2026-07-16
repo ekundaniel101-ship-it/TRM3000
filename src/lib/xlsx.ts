@@ -1,4 +1,5 @@
 import ExcelJS from "exceljs";
+import { getResultsHeading, getResultsRows, type ScoreForSheet, type TestForSheet } from "@/lib/results";
 
 export type ImportedStudentRow = {
   firstName: string;
@@ -60,52 +61,79 @@ export async function parseStudentRosterXlsx(
   return rows;
 }
 
-export async function buildTestScoreSheetXlsx(test: {
-  title: string;
-  subject: string;
-  type: string;
-  date: Date;
-  maxScore: number;
-  scores: {
-    points: number;
-    remarks: string | null;
-    student: { firstName: string; lastName: string; rollNo: string | null };
-  }[];
-}): Promise<Buffer> {
+const THIN_BORDER: Partial<ExcelJS.Borders> = {
+  top: { style: "thin" },
+  left: { style: "thin" },
+  bottom: { style: "thin" },
+  right: { style: "thin" },
+};
+
+export async function buildTestScoreSheetXlsx(
+  test: TestForSheet & { scores: ScoreForSheet[] }
+): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet("Results");
+  const isMock = test.type === "MOCK";
 
-  sheet.columns = [
-    { header: "Student", key: "student", width: 28 },
-    { header: "Roll No.", key: "rollNo", width: 14 },
-    { header: "Score", key: "score", width: 12 },
-    { header: "Max", key: "max", width: 10 },
-    { header: "Percentage", key: "percentage", width: 14 },
-    { header: "Remarks", key: "remarks", width: 30 },
-  ];
+  const columns = isMock
+    ? [
+        { header: "SN", key: "sn", width: 6 },
+        { header: "NAME", key: "name", width: 32 },
+        { header: "COURSE", key: "course", width: 16 },
+        { header: "OBJECTIVE (40)", key: "objective", width: 16 },
+        { header: "THEORY (60)", key: "theory", width: 14 },
+        { header: "TOTAL (100)", key: "total", width: 14 },
+        { header: "GRADE", key: "grade", width: 10 },
+      ]
+    : [
+        { header: "SN", key: "sn", width: 6 },
+        { header: "NAME", key: "name", width: 32 },
+        { header: "COURSE", key: "course", width: 16 },
+        { header: "SCORE", key: "score", width: 14 },
+        { header: "GRADE", key: "grade", width: 10 },
+      ];
 
-  sheet.mergeCells("A1:F1");
-  sheet.spliceRows(1, 0, [`${test.title} (${test.subject})`]);
-  sheet.getRow(1).font = { bold: true, size: 14 };
+  sheet.columns = columns;
 
-  const headerRow = sheet.getRow(2);
+  const { title, subtitle } = getResultsHeading(test);
+  const rows = getResultsRows(test, test.scores);
+
+  sheet.spliceRows(1, 0, [title], [subtitle]);
+  sheet.mergeCells(1, 1, 1, columns.length);
+  sheet.mergeCells(2, 1, 2, columns.length);
+  sheet.getRow(1).font = { bold: true, size: 16 };
+  sheet.getRow(2).font = { bold: true, size: 12 };
+  sheet.getRow(1).alignment = { horizontal: "center" };
+  sheet.getRow(2).alignment = { horizontal: "center" };
+
+  const headerRow = sheet.getRow(3);
   headerRow.font = { bold: true };
   headerRow.eachCell((cell) => {
-    cell.fill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "FFE5E7EB" },
-    };
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFE5E7EB" } };
+    cell.border = THIN_BORDER;
   });
 
-  for (const score of test.scores) {
-    sheet.addRow({
-      student: `${score.student.firstName} ${score.student.lastName}`,
-      rollNo: score.student.rollNo ?? "",
-      score: score.points,
-      max: test.maxScore,
-      percentage: `${((score.points / test.maxScore) * 100).toFixed(1)}%`,
-      remarks: score.remarks ?? "",
+  for (const row of rows) {
+    const excelRow = isMock
+      ? sheet.addRow({
+          sn: row.sn,
+          name: row.name,
+          course: row.course,
+          objective: row.objective ?? "",
+          theory: row.theory ?? "",
+          total: row.total,
+          grade: row.grade,
+        })
+      : sheet.addRow({
+          sn: row.sn,
+          name: row.name,
+          course: row.course,
+          score: `${Math.round(row.percentage)}%`,
+          grade: row.grade,
+        });
+
+    excelRow.eachCell((cell) => {
+      cell.border = THIN_BORDER;
     });
   }
 

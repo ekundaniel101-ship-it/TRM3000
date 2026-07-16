@@ -7,6 +7,7 @@ const navItems = [
   { href: "/students", label: "Students" },
   { href: "/tests/weekly", label: "Weekly Tests" },
   { href: "/tests/after-class", label: "After-Class Tests" },
+  { href: "/tests/mock", label: "Mock Exams" },
 ];
 
 export default async function DashboardLayout({

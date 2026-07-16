@@ -1,6 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { getResultsRows } from "@/lib/results";
+
+const TYPE_LABELS = {
+  WEEKLY: "Weekly Test",
+  AFTER_CLASS: "After-Class Test",
+  MOCK: "Mock Exam",
+} as const;
 
 export default async function TestResultsPage({
   params,
@@ -15,10 +22,10 @@ export default async function TestResultsPage({
   const scores = await prisma.score.findMany({
     where: { testId },
     include: { student: true },
-    orderBy: [{ student: { lastName: "asc" } }, { student: { firstName: "asc" } }],
   });
 
-  const typeLabel = test.type === "WEEKLY" ? "Weekly Test" : "After-Class Test";
+  const isMock = test.type === "MOCK";
+  const rows = getResultsRows(test, scores);
 
   return (
     <div>
@@ -26,11 +33,10 @@ export default async function TestResultsPage({
         <div>
           <h1 className="text-lg font-semibold text-gray-900">{test.title} — Results</h1>
           <p className="text-sm text-gray-500">
-            {typeLabel} · {test.subject} · {test.date.toLocaleDateString()} · Max{" "}
-            {test.maxScore}
+            {TYPE_LABELS[test.type]} · {test.subject} · {test.date.toLocaleDateString()}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Link
             href={`/tests/${test.id}`}
             className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
@@ -44,10 +50,22 @@ export default async function TestResultsPage({
             Export Excel
           </a>
           <a
+            href={`/api/tests/${test.id}/export/docx`}
+            className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Export Word
+          </a>
+          <a
+            href={`/api/tests/${test.id}/export/pdf`}
+            className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Export PDF
+          </a>
+          <a
             href={`/api/tests/${test.id}/export/docx-bundle`}
             className="rounded-md border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
           >
-            Export Word (all)
+            Export Word (zipped, per student)
           </a>
         </div>
       </div>
@@ -57,13 +75,33 @@ export default async function TestResultsPage({
           <thead className="bg-gray-50">
             <tr>
               <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                Student
+                SN
               </th>
               <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                Score
+                Name
               </th>
               <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                Percentage
+                Course
+              </th>
+              {isMock ? (
+                <>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Objective
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Theory
+                  </th>
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                    Total
+                  </th>
+                </>
+              ) : (
+                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                  Score
+                </th>
+              )}
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                Grade
               </th>
               <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
                 Remarks
@@ -72,21 +110,27 @@ export default async function TestResultsPage({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {scores.map((score) => (
-              <tr key={score.id}>
-                <td className="px-4 py-2 text-sm text-gray-900">
-                  {score.student.firstName} {score.student.lastName}
-                </td>
-                <td className="px-4 py-2 text-sm text-gray-500">
-                  {score.points} / {test.maxScore}
-                </td>
-                <td className="px-4 py-2 text-sm text-gray-500">
-                  {((score.points / test.maxScore) * 100).toFixed(1)}%
-                </td>
-                <td className="px-4 py-2 text-sm text-gray-500">{score.remarks || "—"}</td>
+            {rows.map((row) => (
+              <tr key={row.studentId}>
+                <td className="px-4 py-2 text-sm text-gray-500">{row.sn}</td>
+                <td className="px-4 py-2 text-sm text-gray-900">{row.name}</td>
+                <td className="px-4 py-2 text-sm text-gray-500">{row.course}</td>
+                {isMock ? (
+                  <>
+                    <td className="px-4 py-2 text-sm text-gray-500">{row.objective ?? "—"}</td>
+                    <td className="px-4 py-2 text-sm text-gray-500">{row.theory ?? "—"}</td>
+                    <td className="px-4 py-2 text-sm text-gray-500">{row.total}</td>
+                  </>
+                ) : (
+                  <td className="px-4 py-2 text-sm text-gray-500">
+                    {Math.round(row.percentage)}%
+                  </td>
+                )}
+                <td className="px-4 py-2 text-sm text-gray-500">{row.grade}</td>
+                <td className="px-4 py-2 text-sm text-gray-500">{row.remarks || "—"}</td>
                 <td className="px-4 py-2 text-right text-sm">
                   <a
-                    href={`/api/students/${score.studentId}/tests/${test.id}/export/docx`}
+                    href={`/api/students/${row.studentId}/tests/${test.id}/export/docx`}
                     className="text-blue-600 hover:underline"
                   >
                     Export Word
@@ -94,9 +138,12 @@ export default async function TestResultsPage({
                 </td>
               </tr>
             ))}
-            {scores.length === 0 && (
+            {rows.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-sm text-gray-500">
+                <td
+                  colSpan={isMock ? 9 : 7}
+                  className="px-4 py-6 text-center text-sm text-gray-500"
+                >
                   No scores recorded yet.
                 </td>
               </tr>

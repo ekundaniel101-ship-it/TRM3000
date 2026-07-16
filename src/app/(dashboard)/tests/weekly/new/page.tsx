@@ -8,7 +8,7 @@ export default function NewWeeklyTestPage() {
     <div>
       <h1 className="text-lg font-semibold text-gray-900">New Weekly Test</h1>
       <div className="mt-6">
-        <TestForm action={action} />
+        <TestForm action={action} type="WEEKLY" />
       </div>
     </div>
   );

@@ -18,14 +18,25 @@ export const studentSchema = z.object({
   className: z.string().optional().or(z.literal("")),
 });
 
-export const testSchema = z.object({
-  type: z.enum(["WEEKLY", "AFTER_CLASS"]),
-  subject: z.string().min(1),
-  title: z.string().min(1),
-  date: z.string().min(1),
-  maxScore: z.coerce.number().positive(),
-  className: z.string().optional().or(z.literal("")),
-});
+export const testSchema = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("MOCK"),
+    subject: z.string().min(1),
+    title: z.string().min(1),
+    date: z.string().min(1),
+    maxObjective: z.coerce.number().positive(),
+    maxTheory: z.coerce.number().positive(),
+    className: z.string().optional().or(z.literal("")),
+  }),
+  z.object({
+    type: z.enum(["WEEKLY", "AFTER_CLASS"]),
+    subject: z.string().min(1),
+    title: z.string().min(1),
+    date: z.string().min(1),
+    maxScore: z.coerce.number().positive(),
+    className: z.string().optional().or(z.literal("")),
+  }),
+]);
 
 export const importRowSchema = z.object({
   firstName: z.string().min(1),

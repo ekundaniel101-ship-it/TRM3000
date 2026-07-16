@@ -3,6 +3,12 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { saveScores } from "../actions";
 
+const TYPE_LABELS = {
+  WEEKLY: "Weekly Test",
+  AFTER_CLASS: "After-Class Test",
+  MOCK: "Mock Exam",
+} as const;
+
 export default async function TestScoreEntryPage({
   params,
 }: {
@@ -23,7 +29,7 @@ export default async function TestScoreEntryPage({
 
   const scoreByStudentId = new Map(scores.map((s) => [s.studentId, s]));
   const action = saveScores.bind(null, testId);
-  const typeLabel = test.type === "WEEKLY" ? "Weekly Test" : "After-Class Test";
+  const isMock = test.type === "MOCK";
 
   return (
     <div>
@@ -31,8 +37,10 @@ export default async function TestScoreEntryPage({
         <div>
           <h1 className="text-lg font-semibold text-gray-900">{test.title}</h1>
           <p className="text-sm text-gray-500">
-            {typeLabel} · {test.subject} · {test.date.toLocaleDateString()} · Max{" "}
-            {test.maxScore}
+            {TYPE_LABELS[test.type]} · {test.subject} · {test.date.toLocaleDateString()} ·{" "}
+            {isMock
+              ? `Objective /${test.maxObjective} · Theory /${test.maxTheory}`
+              : `Max ${test.maxScore}`}
           </p>
         </div>
         <Link
@@ -45,7 +53,7 @@ export default async function TestScoreEntryPage({
 
       {students.length === 0 ? (
         <p className="mt-6 text-sm text-gray-500">
-          No students in the roster{test.className ? ` for class "${test.className}"` : ""}.{" "}
+          No students in the roster{test.className ? ` for course "${test.className}"` : ""}.{" "}
           <Link href="/students/new" className="text-blue-600 hover:underline">
             Add a student
           </Link>{" "}
@@ -60,9 +68,20 @@ export default async function TestScoreEntryPage({
                   <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
                     Student
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                    Score
-                  </th>
+                  {isMock ? (
+                    <>
+                      <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                        Objective
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                        Theory
+                      </th>
+                    </>
+                  ) : (
+                    <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                      Score
+                    </th>
+                  )}
                   <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
                     Remarks
                   </th>
@@ -77,17 +96,44 @@ export default async function TestScoreEntryPage({
                         <input type="hidden" name="studentId" value={student.id} />
                         {student.firstName} {student.lastName}
                       </td>
-                      <td className="px-4 py-2">
-                        <input
-                          type="number"
-                          step="0.01"
-                          min={0}
-                          max={test.maxScore}
-                          name={`points_${student.id}`}
-                          defaultValue={existing?.points ?? ""}
-                          className="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
+                      {isMock ? (
+                        <>
+                          <td className="px-4 py-2">
+                            <input
+                              type="number"
+                              step="0.01"
+                              min={0}
+                              max={test.maxObjective ?? undefined}
+                              name={`objective_${student.id}`}
+                              defaultValue={existing?.objectivePoints ?? ""}
+                              className="w-20 rounded-md border border-gray-300 px-2 py-1 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                          </td>
+                          <td className="px-4 py-2">
+                            <input
+                              type="number"
+                              step="0.01"
+                              min={0}
+                              max={test.maxTheory ?? undefined}
+                              name={`theory_${student.id}`}
+                              defaultValue={existing?.theoryPoints ?? ""}
+                              className="w-20 rounded-md border border-gray-300 px-2 py-1 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                          </td>
+                        </>
+                      ) : (
+                        <td className="px-4 py-2">
+                          <input
+                            type="number"
+                            step="0.01"
+                            min={0}
+                            max={test.maxScore}
+                            name={`points_${student.id}`}
+                            defaultValue={existing?.points ?? ""}
+                            className="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          />
+                        </td>
+                      )}
                       <td className="px-4 py-2">
                         <input
                           type="text"
