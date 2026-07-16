@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum TestType {
+  WEEKLY
+  AFTER_CLASS
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String?
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+}
+
+model Student {
+  id          String   @id @default(cuid())
+  firstName   String
+  lastName    String
+  rollNo      String?
+  className   String?
+  createdById String?
+  createdAt   DateTime @default(now())
+  scores      Score[]
+
+  @@unique([firstName, lastName, className])
+}
+
+model Test {
+  id          String   @id @default(cuid())
+  type        TestType
+  subject     String
+  title       String
+  date        DateTime
+  maxScore    Float    @default(100)
+  className   String?
+  createdById String?
+  createdAt   DateTime @default(now())
+  scores      Score[]
+
+  @@index([type, date])
+}
+
+model Score {
+  id        String  @id @default(cuid())
+  testId    String
+  test      Test    @relation(fields: [testId], references: [id], onDelete: Cascade)
+  studentId String
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  points    Float
+  remarks   String?
+
+  @@unique([testId, studentId])
+  @@index([studentId])
+}
