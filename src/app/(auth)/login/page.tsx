@@ -12,7 +12,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm space-y-6 rounded-lg border border-gray-200 bg-white p-8 shadow-sm">
         <div>
           <h1 className="text-xl font-semibold text-gray-900">Log in</h1>
-          <p className="mt-1 text-sm text-gray-500">TRM3000 test results manager.</p>
+          <p className="mt-1 text-sm text-gray-700">TRM3000 test results manager.</p>
         </div>
 
         <form action={formAction} className="space-y-4">
@@ -25,7 +25,7 @@ export default function LoginPage() {
               name="email"
               type="email"
               required
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
@@ -38,7 +38,7 @@ export default function LoginPage() {
               name="password"
               type="password"
               required
-              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
           </div>
 
@@ -53,7 +53,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-gray-700">
           Don&apos;t have an account?{" "}
           <Link href="/signup" className="font-medium text-blue-600 hover:underline">
             Sign up

@@ -25,16 +25,16 @@ export default async function MockExamsPage() {
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                 Title
               </th>
-              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                 Subject
               </th>
-              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                 Date
               </th>
-              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                 Scored
               </th>
               <th className="px-4 py-2" />
@@ -48,11 +48,11 @@ export default async function MockExamsPage() {
                     {test.title}
                   </Link>
                 </td>
-                <td className="px-4 py-2 text-sm text-gray-500">{test.subject}</td>
-                <td className="px-4 py-2 text-sm text-gray-500">
+                <td className="px-4 py-2 text-sm text-gray-700">{test.subject}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">
                   {test.date.toLocaleDateString()}
                 </td>
-                <td className="px-4 py-2 text-sm text-gray-500">{test._count.scores}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{test._count.scores}</td>
                 <td className="px-4 py-2 text-right text-sm">
                   <Link
                     href={`/tests/${test.id}/results`}
@@ -72,7 +72,7 @@ export default async function MockExamsPage() {
             ))}
             {tests.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-4 py-6 text-center text-sm text-gray-500">
+                <td colSpan={5} className="px-4 py-6 text-center text-sm text-gray-700">
                   No mock exams yet.
                 </td>
               </tr>

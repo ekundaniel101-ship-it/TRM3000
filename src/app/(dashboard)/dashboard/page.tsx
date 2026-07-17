@@ -24,7 +24,7 @@ export default async function DashboardPage() {
             key={stat.label}
             className="rounded-lg border border-gray-200 bg-white p-6"
           >
-            <p className="text-sm text-gray-500">{stat.label}</p>
+            <p className="text-sm text-gray-700">{stat.label}</p>
             <p className="mt-2 text-2xl font-semibold text-gray-900">{stat.value}</p>
           </div>
         ))}

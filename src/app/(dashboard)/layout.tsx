@@ -28,7 +28,7 @@ export default async function DashboardLayout({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-sm text-gray-600 hover:text-gray-900"
+                  className="text-sm text-gray-700 hover:text-gray-900"
                 >
                   {item.label}
                 </Link>
@@ -36,11 +36,11 @@ export default async function DashboardLayout({
             </nav>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500">{session?.user?.email}</span>
+            <span className="text-sm text-gray-700">{session?.user?.email}</span>
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="text-sm text-gray-600 hover:text-gray-900"
+                className="text-sm text-gray-700 hover:text-gray-900"
               >
                 Log out
               </button>

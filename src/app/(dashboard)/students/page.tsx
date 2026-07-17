@@ -50,7 +50,7 @@ export default async function StudentsPage({
           name="q"
           defaultValue={query}
           placeholder="Search by name, class, or roll no."
-          className="w-full max-w-sm rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="w-full max-w-sm rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
       </form>
 
@@ -58,13 +58,13 @@ export default async function StudentsPage({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                 Name
               </th>
-              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                 Roll No.
               </th>
-              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                 Class
               </th>
               <th className="px-4 py-2" />
@@ -76,10 +76,10 @@ export default async function StudentsPage({
                 <td className="px-4 py-2 text-sm text-gray-900">
                   {student.firstName} {student.lastName}
                 </td>
-                <td className="px-4 py-2 text-sm text-gray-500">
+                <td className="px-4 py-2 text-sm text-gray-700">
                   {student.rollNo || "—"}
                 </td>
-                <td className="px-4 py-2 text-sm text-gray-500">
+                <td className="px-4 py-2 text-sm text-gray-700">
                   {student.className || "—"}
                 </td>
                 <td className="px-4 py-2 text-right text-sm">
@@ -103,7 +103,7 @@ export default async function StudentsPage({
             ))}
             {students.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-6 text-center text-sm text-gray-500">
+                <td colSpan={4} className="px-4 py-6 text-center text-sm text-gray-700">
                   No students found.
                 </td>
               </tr>

@@ -32,7 +32,7 @@ export default async function TestResultsPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-gray-900">{test.title} — Results</h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-700">
             {TYPE_LABELS[test.type]} · {test.subject} · {test.date.toLocaleDateString()}
           </p>
         </div>
@@ -74,36 +74,36 @@ export default async function TestResultsPage({
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                 SN
               </th>
-              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                 Name
               </th>
-              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                 Course
               </th>
               {isMock ? (
                 <>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                     Objective
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                     Theory
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                     Total
                   </th>
                 </>
               ) : (
-                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                   Score
                 </th>
               )}
-              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                 Grade
               </th>
-              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+              <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                 Remarks
               </th>
               <th className="px-4 py-2" />
@@ -112,22 +112,22 @@ export default async function TestResultsPage({
           <tbody className="divide-y divide-gray-200">
             {rows.map((row) => (
               <tr key={row.studentId}>
-                <td className="px-4 py-2 text-sm text-gray-500">{row.sn}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{row.sn}</td>
                 <td className="px-4 py-2 text-sm text-gray-900">{row.name}</td>
-                <td className="px-4 py-2 text-sm text-gray-500">{row.course}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{row.course}</td>
                 {isMock ? (
                   <>
-                    <td className="px-4 py-2 text-sm text-gray-500">{row.objective ?? "—"}</td>
-                    <td className="px-4 py-2 text-sm text-gray-500">{row.theory ?? "—"}</td>
-                    <td className="px-4 py-2 text-sm text-gray-500">{row.total}</td>
+                    <td className="px-4 py-2 text-sm text-gray-700">{row.objective ?? "—"}</td>
+                    <td className="px-4 py-2 text-sm text-gray-700">{row.theory ?? "—"}</td>
+                    <td className="px-4 py-2 text-sm text-gray-700">{row.total}</td>
                   </>
                 ) : (
-                  <td className="px-4 py-2 text-sm text-gray-500">
+                  <td className="px-4 py-2 text-sm text-gray-700">
                     {Math.round(row.percentage)}%
                   </td>
                 )}
-                <td className="px-4 py-2 text-sm text-gray-500">{row.grade}</td>
-                <td className="px-4 py-2 text-sm text-gray-500">{row.remarks || "—"}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{row.grade}</td>
+                <td className="px-4 py-2 text-sm text-gray-700">{row.remarks || "—"}</td>
                 <td className="px-4 py-2 text-right text-sm">
                   <a
                     href={`/api/students/${row.studentId}/tests/${test.id}/export/docx`}
@@ -142,7 +142,7 @@ export default async function TestResultsPage({
               <tr>
                 <td
                   colSpan={isMock ? 9 : 7}
-                  className="px-4 py-6 text-center text-sm text-gray-500"
+                  className="px-4 py-6 text-center text-sm text-gray-700"
                 >
                   No scores recorded yet.
                 </td>

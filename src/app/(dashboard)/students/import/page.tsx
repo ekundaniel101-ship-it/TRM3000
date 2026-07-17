@@ -48,7 +48,7 @@ export default function ImportStudentsPage() {
   return (
     <div>
       <h1 className="text-lg font-semibold text-gray-900">Import Students</h1>
-      <p className="mt-1 max-w-xl text-sm text-gray-500">
+      <p className="mt-1 max-w-xl text-sm text-gray-700">
         Upload an Excel (.xlsx) roster with columns for First Name, Last Name, Roll No.,
         and Class, or a Word (.docx) document listing students one per line. You&apos;ll
         get a preview before anything is saved. Excel import is the most reliable — Word
@@ -84,23 +84,23 @@ export default function ImportStudentsPage() {
 
       {rows.length > 0 && (
         <div className="mt-6">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-700">
             Found {rows.length} row{rows.length === 1 ? "" : "s"}. Review before importing:
           </p>
           <div className="mt-2 max-h-96 overflow-auto rounded-lg border border-gray-200 bg-white">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                     First name
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                     Last name
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                     Roll No.
                   </th>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
+                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-700">
                     Class
                   </th>
                 </tr>
@@ -110,8 +110,8 @@ export default function ImportStudentsPage() {
                   <tr key={i}>
                     <td className="px-4 py-2 text-sm text-gray-900">{row.firstName}</td>
                     <td className="px-4 py-2 text-sm text-gray-900">{row.lastName}</td>
-                    <td className="px-4 py-2 text-sm text-gray-500">{row.rollNo || "—"}</td>
-                    <td className="px-4 py-2 text-sm text-gray-500">{row.className || "—"}</td>
+                    <td className="px-4 py-2 text-sm text-gray-700">{row.rollNo || "—"}</td>
+                    <td className="px-4 py-2 text-sm text-gray-700">{row.className || "—"}</td>
                   </tr>
                 ))}
               </tbody>
