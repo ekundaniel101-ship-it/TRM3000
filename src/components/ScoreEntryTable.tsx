@@ -35,11 +35,9 @@ export function ScoreEntryTable({
   const [query, setQuery] = useState("");
 
   const normalized = query.trim().toLowerCase();
-  const filtered = normalized
-    ? students.filter((s) =>
-        `${s.firstName} ${s.lastName}`.toLowerCase().includes(normalized)
-      )
-    : students;
+  const matches = (s: Student) =>
+    !normalized || `${s.firstName} ${s.lastName}`.toLowerCase().includes(normalized);
+  const visibleCount = students.filter(matches).length;
 
   return (
     <form action={action} className="mt-6">
@@ -78,10 +76,10 @@ export function ScoreEntryTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {filtered.map((student) => {
+            {students.map((student) => {
               const existing = scoresByStudentId[student.id];
               return (
-                <tr key={student.id}>
+                <tr key={student.id} className={matches(student) ? undefined : "hidden"}>
                   <td className="px-4 py-2 text-sm text-gray-900">
                     <input type="hidden" name="studentId" value={student.id} />
                     {student.firstName} {student.lastName}
@@ -135,7 +133,7 @@ export function ScoreEntryTable({
                 </tr>
               );
             })}
-            {filtered.length === 0 && (
+            {visibleCount === 0 && (
               <tr>
                 <td
                   colSpan={isMock ? 4 : 3}
