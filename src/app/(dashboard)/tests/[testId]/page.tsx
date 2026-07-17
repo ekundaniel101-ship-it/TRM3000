@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { saveScores } from "../actions";
+import { ScoreEntryTable } from "@/components/ScoreEntryTable";
 
 const TYPE_LABELS = {
   WEEKLY: "Weekly Test",
@@ -27,7 +28,17 @@ export default async function TestScoreEntryPage({
     prisma.score.findMany({ where: { testId } }),
   ]);
 
-  const scoreByStudentId = new Map(scores.map((s) => [s.studentId, s]));
+  const scoresByStudentId = Object.fromEntries(
+    scores.map((s) => [
+      s.studentId,
+      {
+        points: s.points,
+        objectivePoints: s.objectivePoints,
+        theoryPoints: s.theoryPoints,
+        remarks: s.remarks,
+      },
+    ])
+  );
   const action = saveScores.bind(null, testId);
   const isMock = test.type === "MOCK";
 
@@ -36,7 +47,7 @@ export default async function TestScoreEntryPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-lg font-semibold text-gray-900">{test.title}</h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-700">
             {TYPE_LABELS[test.type]} · {test.subject} · {test.date.toLocaleDateString()} ·{" "}
             {isMock
               ? `Objective /${test.maxObjective} · Theory /${test.maxTheory}`
@@ -52,7 +63,7 @@ export default async function TestScoreEntryPage({
       </div>
 
       {students.length === 0 ? (
-        <p className="mt-6 text-sm text-gray-500">
+        <p className="mt-6 text-sm text-gray-700">
           No students in the roster{test.className ? ` for course "${test.className}"` : ""}.{" "}
           <Link href="/students/new" className="text-blue-600 hover:underline">
             Add a student
@@ -60,102 +71,15 @@ export default async function TestScoreEntryPage({
           first.
         </p>
       ) : (
-        <form action={action} className="mt-6">
-          <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                    Student
-                  </th>
-                  {isMock ? (
-                    <>
-                      <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                        Objective
-                      </th>
-                      <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                        Theory
-                      </th>
-                    </>
-                  ) : (
-                    <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                      Score
-                    </th>
-                  )}
-                  <th className="px-4 py-2 text-left text-xs font-medium uppercase text-gray-500">
-                    Remarks
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {students.map((student) => {
-                  const existing = scoreByStudentId.get(student.id);
-                  return (
-                    <tr key={student.id}>
-                      <td className="px-4 py-2 text-sm text-gray-900">
-                        <input type="hidden" name="studentId" value={student.id} />
-                        {student.firstName} {student.lastName}
-                      </td>
-                      {isMock ? (
-                        <>
-                          <td className="px-4 py-2">
-                            <input
-                              type="number"
-                              step="0.01"
-                              min={0}
-                              max={test.maxObjective ?? undefined}
-                              name={`objective_${student.id}`}
-                              defaultValue={existing?.objectivePoints ?? ""}
-                              className="w-20 rounded-md border border-gray-300 px-2 py-1 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            />
-                          </td>
-                          <td className="px-4 py-2">
-                            <input
-                              type="number"
-                              step="0.01"
-                              min={0}
-                              max={test.maxTheory ?? undefined}
-                              name={`theory_${student.id}`}
-                              defaultValue={existing?.theoryPoints ?? ""}
-                              className="w-20 rounded-md border border-gray-300 px-2 py-1 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            />
-                          </td>
-                        </>
-                      ) : (
-                        <td className="px-4 py-2">
-                          <input
-                            type="number"
-                            step="0.01"
-                            min={0}
-                            max={test.maxScore}
-                            name={`points_${student.id}`}
-                            defaultValue={existing?.points ?? ""}
-                            className="w-24 rounded-md border border-gray-300 px-2 py-1 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                          />
-                        </td>
-                      )}
-                      <td className="px-4 py-2">
-                        <input
-                          type="text"
-                          name={`remarks_${student.id}`}
-                          defaultValue={existing?.remarks ?? ""}
-                          className="w-full rounded-md border border-gray-300 px-2 py-1 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          <button
-            type="submit"
-            className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
-          >
-            Save scores
-          </button>
-        </form>
+        <ScoreEntryTable
+          students={students}
+          scoresByStudentId={scoresByStudentId}
+          isMock={isMock}
+          maxObjective={test.maxObjective}
+          maxTheory={test.maxTheory}
+          maxScore={test.maxScore}
+          action={action}
+        />
       )}
     </div>
   );
