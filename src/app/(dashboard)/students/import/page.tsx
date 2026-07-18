@@ -122,7 +122,7 @@ export default function ImportStudentsPage() {
             type="button"
             onClick={handleConfirm}
             disabled={status === "importing"}
-            className="mt-4 rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            className="mt-4 rounded-md bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-purple-700 disabled:opacity-50"
           >
             {status === "importing" ? "Importing…" : `Import ${rows.length} students`}
           </button>

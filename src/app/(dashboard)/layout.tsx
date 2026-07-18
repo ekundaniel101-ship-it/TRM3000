@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { logoutAction } from "./actions";
+import { Logo } from "@/components/Logo";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard" },
@@ -19,16 +20,18 @@ export default async function DashboardLayout({
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="border-b border-gray-200 bg-white">
+      <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/90 shadow-sm backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-6">
-            <span className="text-sm font-semibold text-gray-900">TRM3000</span>
-            <nav className="flex gap-4">
+          <div className="flex items-center gap-8">
+            <Link href="/dashboard">
+              <Logo size="sm" />
+            </Link>
+            <nav className="flex gap-1">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="text-sm text-gray-700 hover:text-gray-900"
+                  className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
                 >
                   {item.label}
                 </Link>
@@ -40,7 +43,7 @@ export default async function DashboardLayout({
             <form action={logoutAction}>
               <button
                 type="submit"
-                className="text-sm text-gray-700 hover:text-gray-900"
+                className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 hover:text-gray-900"
               >
                 Log out
               </button>

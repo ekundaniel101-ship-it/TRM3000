@@ -15,7 +15,7 @@ export default async function AfterClassTestsPage() {
         <h1 className="text-lg font-semibold text-gray-900">After-Class Tests</h1>
         <Link
           href="/tests/after-class/new"
-          className="rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white hover:bg-blue-700"
+          className="rounded-md bg-gradient-to-r from-blue-600 to-purple-600 px-3 py-2 text-sm font-medium text-white hover:from-blue-700 hover:to-purple-700"
         >
           New After-Class Test
         </Link>
