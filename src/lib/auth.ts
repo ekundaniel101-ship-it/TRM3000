@@ -31,6 +31,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             where: { id: user.id },
             data: { role: "OWNER" },
           });
+        } else if (user.email !== OWNER_EMAIL && user.role === "OWNER") {
+          user = await prisma.user.update({
+            where: { id: user.id },
+            data: { role: "TEACHER" },
+          });
         }
 
         return { id: user.id, email: user.email, name: user.name, role: user.role };
