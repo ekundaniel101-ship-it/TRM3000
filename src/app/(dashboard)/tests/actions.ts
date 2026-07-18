@@ -76,7 +76,7 @@ export async function saveScores(testId: string, formData: FormData) {
   const test = await prisma.test.findUniqueOrThrow({ where: { id: testId } });
   const studentIds = formData.getAll("studentId").map(String);
 
-  await prisma.$transaction(
+  await Promise.all(
     studentIds.map((studentId) => {
       const rawRemarks = formData.get(`remarks_${studentId}`);
       const remarks = typeof rawRemarks === "string" && rawRemarks ? rawRemarks : null;
