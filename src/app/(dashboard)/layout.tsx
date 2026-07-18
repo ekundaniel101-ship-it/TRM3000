@@ -17,6 +17,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await auth();
+  const isOwner = session?.user?.role === "OWNER";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -36,6 +37,14 @@ export default async function DashboardLayout({
                   {item.label}
                 </Link>
               ))}
+              {isOwner && (
+                <Link
+                  href="/admin"
+                  className="rounded-md px-3 py-1.5 text-sm font-medium text-purple-700 transition-colors hover:bg-purple-50"
+                >
+                  Master Control
+                </Link>
+              )}
             </nav>
           </div>
           <div className="flex items-center gap-4">

@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { signIn } from "@/lib/auth";
 import { signupSchema } from "@/lib/validators";
+import { OWNER_EMAIL } from "@/lib/constants";
 
 export type SignupState = { error?: string };
 
@@ -30,7 +31,12 @@ export async function signupAction(
 
   const passwordHash = await bcrypt.hash(password, 10);
   await prisma.user.create({
-    data: { name: name || null, email, passwordHash },
+    data: {
+      name: name || null,
+      email,
+      passwordHash,
+      role: email === OWNER_EMAIL ? "OWNER" : "TEACHER",
+    },
   });
 
   await signIn("credentials", { email, password, redirectTo: "/dashboard" });

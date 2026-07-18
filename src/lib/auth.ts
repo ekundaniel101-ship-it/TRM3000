@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
 import { loginSchema } from "@/lib/validators";
 import { authConfig } from "@/lib/auth.config";
+import { OWNER_EMAIL } from "@/lib/constants";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -17,7 +18,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const parsed = loginSchema.safeParse(credentials);
         if (!parsed.success) return null;
 
-        const user = await prisma.user.findUnique({
+        let user = await prisma.user.findUnique({
           where: { email: parsed.data.email },
         });
         if (!user) return null;
@@ -25,7 +26,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
         if (!valid) return null;
 
-        return { id: user.id, email: user.email, name: user.name };
+        if (user.email === OWNER_EMAIL && user.role !== "OWNER") {
+          user = await prisma.user.update({
+            where: { id: user.id },
+            data: { role: "OWNER" },
+          });
+        }
+
+        return { id: user.id, email: user.email, name: user.name, role: user.role };
       },
     }),
   ],
